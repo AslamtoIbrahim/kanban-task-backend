@@ -8,9 +8,9 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { SubtaskService } from './subtask.service';
-import { CreateSubtaskDto } from './dto/create-subtask.dto';
-import { UpdateSubtaskDto } from './dto/update-subtask.dto';
+import { SubtaskService } from './subtask.service.js';
+import { CreateSubtaskDto } from './dto/create-subtask.dto.js';
+import { UpdateSubtaskDto } from './dto/update-subtask.dto.js';
 import type { UserSession } from '@thallesp/nestjs-better-auth';
 import { Session } from '@thallesp/nestjs-better-auth';
 

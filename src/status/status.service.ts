@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateStatusDto } from './dto/create-status.dto';
-import { UpdateStatusDto } from './dto/update-status.dto';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateStatusDto } from './dto/create-status.dto.js';
+import { UpdateStatusDto } from './dto/update-status.dto.js';
 
 @Injectable()
 export class StatusService {

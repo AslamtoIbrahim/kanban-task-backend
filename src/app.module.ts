@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { auth } from './auth/auth';
-import { UserModule } from './user/user.module';
-import { TagModule } from './tag/tag.module';
-import { StatusModule } from './status/status.module';
-import { TaskModule } from './task/task.module';
-import { SubtaskModule } from './subtask/subtask.module';
-import { PrismaModule } from './prisma/prisma.module';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
+import { auth } from './auth/auth.js';
+import { UserModule } from './user/user.module.js';
+import { TagModule } from './tag/tag.module.js';
+import { StatusModule } from './status/status.module.js';
+import { TaskModule } from './task/task.module.js';
+import { SubtaskModule } from './subtask/subtask.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
   imports: [

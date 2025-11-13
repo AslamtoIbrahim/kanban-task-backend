@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import type { UserSession } from '@thallesp/nestjs-better-auth';
 import { Session } from '@thallesp/nestjs-better-auth';
-import { CreateStatusDto } from './dto/create-status.dto';
-import { UpdateStatusDto } from './dto/update-status.dto';
-import { StatusService } from './status.service';
+import { CreateStatusDto } from './dto/create-status.dto.js';
+import { UpdateStatusDto } from './dto/update-status.dto.js';
+import { StatusService } from './status.service.js';
 
 @Controller('status')
 export class StatusController {
