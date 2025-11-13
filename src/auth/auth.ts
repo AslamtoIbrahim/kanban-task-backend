@@ -6,7 +6,10 @@ import { PrismaService } from '../prisma/prisma.service.js';
 const prisma = new PrismaService();
 
 export const auth = betterAuth({
-  trustedOrigins: ['http://localhost:3005'],
+  trustedOrigins: [
+    'http://localhost:3005',
+    'https://kanban-task-backend.vercel.app',
+  ],
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
@@ -14,7 +17,11 @@ export const auth = betterAuth({
     enabled: true,
   },
   advanced: {
-    disableOriginCheck: true,
+    defaultCookieAttributes: {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    },
   },
   socialProviders: {
     google: {
