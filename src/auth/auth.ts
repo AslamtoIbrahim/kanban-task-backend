@@ -7,6 +7,7 @@ const prisma = new PrismaService();
 
 export const auth = betterAuth({
   trustedOrigins: [
+    'http://localhost:5173',
     'http://localhost:3005',
     'https://kanban-task-backend.vercel.app',
   ],
