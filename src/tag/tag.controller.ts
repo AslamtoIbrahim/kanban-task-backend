@@ -33,7 +33,7 @@ export class TagController {
   }
 
   @Get('check')
-  check(@Param() title: string) {
+  check(@Param('title') title: string) {
     return this.tagService.chekTag(title);
   }
 
