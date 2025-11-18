@@ -48,6 +48,26 @@ export class TagService {
     }
   }
 
+  async chekTag(title: string) {
+    try {
+      if (!title) {
+        throw new Error('Tag title is required to find a tag');
+      }
+      const existingTag = await this.prisma.tag.findFirst({
+        where: {
+          title,
+        },
+      });
+
+      return { exist: !!existingTag };
+    } catch (error) {
+      return {
+        error: 'Failed to find tag with this title',
+        details: error.message,
+      };
+    }
+  }
+
   async findOne(id: string) {
     if (!id) {
       throw new Error('Tag ID is required to find a tag');

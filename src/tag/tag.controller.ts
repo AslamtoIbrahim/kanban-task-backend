@@ -32,6 +32,11 @@ export class TagController {
     return this.tagService.findOne(id);
   }
 
+  @Get('check')
+  check(@Param() title: string) {
+    return this.tagService.chekTag(title);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
     return this.tagService.update(id, updateTagDto);
