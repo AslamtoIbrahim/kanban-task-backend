@@ -49,6 +49,7 @@ export class TagService {
   }
 
   async chekTag(title: string, userId: string) {
+    console.log('title: ',title)
     if (!userId) {
       throw new Error('User ID is required to create a tag');
     }
@@ -61,6 +62,9 @@ export class TagService {
           title,
         },
       });
+
+    console.log('existingTag: ',existingTag)
+
 
       return { exist: !!existingTag };
     } catch (error) {
