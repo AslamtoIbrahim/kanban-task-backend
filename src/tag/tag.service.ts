@@ -48,7 +48,10 @@ export class TagService {
     }
   }
 
-  async chekTag(title: string) {
+  async chekTag(title: string, userId: string) {
+    if (!userId) {
+      throw new Error('User ID is required to create a tag');
+    }
     try {
       if (!title) {
         throw new Error('Tag title is required to find a tag');

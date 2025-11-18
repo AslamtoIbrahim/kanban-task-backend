@@ -33,8 +33,8 @@ export class TagController {
   }
 
   @Get('check')
-  check(@Param('title') title: string) {
-    return this.tagService.chekTag(title);
+  check(@Param('title') title: string, @Session() session: UserSession) {
+    return this.tagService.chekTag(title, session.user.id);
   }
 
   @Patch(':id')
