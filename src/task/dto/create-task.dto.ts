@@ -19,4 +19,6 @@ export class CreateTaskDto {
   @IsString()
   @IsNotEmpty()
   statusId: string;
+
+  subtasks?: { id: string; title: string; isDone: boolean }[];
 }

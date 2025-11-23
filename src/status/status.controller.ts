@@ -23,9 +23,23 @@ export class StatusController {
     return this.statusService.create(createStatusDto);
   }
 
+  @Get('check')
+  check(
+    @Query('title') title: string,
+    @Query('tagId') tagId: string,
+    @Session() session: UserSession,
+  ) {
+    return this.statusService.checkStatus(title, tagId, session.user.id);
+  }
+
   @Get()
-  findAll(@Query('tagId') tagId: string, @Session() session: UserSession) {
-    return this.statusService.findAll(tagId, session.user.id);
+  findAll(
+    @Query('tagId') tagId: string,
+    @Query('cursor') cursor: string,
+    @Query('limit') limit: string,
+    @Session() session: UserSession,
+  ) {
+    return this.statusService.findAll(tagId, cursor, limit, session.user.id);
   }
 
   @Get(':id')

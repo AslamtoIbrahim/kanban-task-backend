@@ -23,8 +23,19 @@ export class TagService {
       }
       const newTag = await this.prisma.tag.create({
         data: {
-          ...createTagDto,
+          title: createTagDto.title,
+          statuses: {
+            // relation tag <=> status
+            create: createTagDto.statuses, // tagId generate autho
+          },
           userId: userId,
+        },
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          updatedAt: true,
+          statuses: true,
         },
       });
       return newTag;
@@ -33,25 +44,41 @@ export class TagService {
     }
   }
 
-  async findAll(userId: string) {
+  async findAll(userId: string, limit: string, cursor: string) {
     if (!userId) {
       throw new Error('User ID is required to create a tag');
     }
     try {
-      return await this.prisma.tag.findMany({
+      const take = parseInt(limit) || 6;
+
+      const tags = await this.prisma.tag.findMany({
+        take,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
         where: {
           userId: userId,
         },
+        orderBy: { id: 'asc' },
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          updatedAt: true,
+          statuses: true,
+        },
       });
+      // if (!tags || tags.length === 0) {
+      //   return { tags: [], nextCursor: null };
+      // }
+      return { tags, nextCursor: tags[tags.length - 1]?.id ?? null };
     } catch (error) {
       return { error: 'Failed to find tags', details: error.message };
     }
   }
 
   async chekTag(title: string, userId: string) {
-    console.log('title: ',title)
     if (!userId) {
-      throw new Error('User ID is required to create a tag');
+      throw new Error('User ID is required to check a tag');
     }
     try {
       if (!title) {
@@ -63,10 +90,7 @@ export class TagService {
         },
       });
 
-    console.log('existingTag: ',existingTag)
-
-
-      return { exist: !!existingTag };
+      return { exist: !!existingTag, id: existingTag?.id };
     } catch (error) {
       return {
         error: 'Failed to find tag with this title',
@@ -91,15 +115,64 @@ export class TagService {
     }
   }
 
+  async deleteStatues(id: string, updateTagDto: UpdateTagDto) {
+    const oldIdStatuses = await this.prisma.status.findMany({
+      where: { tagId: id },
+      select: { id: true },
+    });
+
+    const incomingIds = updateTagDto.statuses
+      ?.filter((s) => s.id)
+      .map((s) => s.id);
+
+    return oldIdStatuses
+      .filter((os) => !incomingIds?.includes(os.id))
+      .map((os) => os.id);
+  }
+
   async update(id: string, updateTagDto: UpdateTagDto) {
     if (!id) {
       throw new Error('Tag ID is required to update a tag');
     }
     try {
-      return await this.prisma.tag.update({
+      const deletedIds = await this.deleteStatues(id, updateTagDto);
+
+      const tag = await this.prisma.tag.update({
         where: { id: id },
-        data: { ...updateTagDto },
+        data: {
+          title: updateTagDto.title,
+          statuses: {
+            delete: deletedIds.map((d) => ({ id: d })),
+            update: updateTagDto.statuses
+              ?.filter((f) => f.id)
+              .map((s) => ({
+                where: {
+                  id: s.id,
+                },
+                data: {
+                  title: s.title,
+                  color: s.color,
+                  position: s.position,
+                },
+              })),
+            create: updateTagDto.statuses
+              ?.filter((f) => !f.id)
+              .map((s) => ({
+                title: s.title,
+                color: s.color,
+                position: s.position,
+              })),
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          updatedAt: true,
+          statuses: true,
+        },
       });
+      return tag;
     } catch (error) {
       return {
         error: 'Failed to update tag with this id',

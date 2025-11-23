@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { title } from 'process';
 
 @Injectable()
 export class TaskService {
@@ -19,7 +20,16 @@ export class TaskService {
         throw new Error('Task with this title already exists for this status');
       }
       const task = await this.prisma.task.create({
-        data: createTaskDto,
+        data: {
+          title: createTaskDto.title,
+          description: createTaskDto.description,
+          position: createTaskDto.position,
+          currentStatus: createTaskDto.currentStatus,
+          statusId: createTaskDto.statusId,
+          subtasks: {
+            create: createTaskDto.subtasks,
+          },
+        },
       });
       return task;
     } catch (error) {
@@ -27,19 +37,31 @@ export class TaskService {
     }
   }
 
-  async findAll(statusId: string, userId: string) {
+  async findAll(
+    statusId: string,
+    cursor: string,
+    limit: string,
+    userId: string,
+  ) {
     if (!statusId) {
       throw new Error('statusId is required');
     }
     try {
-      const task = await this.prisma.task.findMany({
+      const take = parseInt(limit) || 8;
+      const tasks = await this.prisma.task.findMany({
+        take,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
         where: {
           statusId,
           status: { tag: { userId } },
         },
+        include: {
+          subtasks: true,
+        },
         orderBy: { position: 'asc' },
       });
-      return task;
+      return { tasks, nextCursor: tasks[tasks.length - 1]?.id ?? null };
     } catch (error) {
       return { error: 'Error creating task', details: error };
     }
@@ -65,7 +87,45 @@ export class TaskService {
     try {
       return await this.prisma.task.update({
         where: { id },
-        data: updateTaskDto,
+        data: {
+          title: updateTaskDto.title,
+          description: updateTaskDto.description,
+          position: updateTaskDto.position,
+          currentStatus: updateTaskDto.currentStatus,
+          statusId: updateTaskDto.statusId,
+          subtasks: {
+            update: updateTaskDto.subtasks
+              ?.filter((f) => f.id)
+              .map((s) => ({
+                where: { id: s.id },
+                data: {
+                  title: s.title,
+                  isDone: s.isDone,
+                },
+              })),
+            create: updateTaskDto.subtasks
+              ?.filter((f) => !f.id)
+              .map((s) => ({
+                title: s.title,
+                isDone: s.isDone,
+              })),
+          },
+
+          // subtasks: {
+          //   upsert: updateTaskDto.subtasks?.map((s) => ({
+          //     where: { id: s.id ?? '00000000-0000-0000-0000-000000000000' },
+          //     update: {
+          //       title: s.title,
+          //       isDone: s.isDone,
+          //     },
+          //     create: {
+          //       title: s.title,
+          //       isDone: s.isDone,
+          //       taskId: id,
+          //     },
+          //   })),
+          // },
+        },
       });
     } catch (error) {
       return { error: 'Error updating a task', details: error };
