@@ -7,6 +7,7 @@ const prisma = new PrismaService();
 
 export const auth = betterAuth({
   trustedOrigins: [
+    'https://dancing-longma-3d3bef.netlify.app',
     'http://localhost:5173',
     'http://localhost:3005',
     'https://kanban-task-backend.vercel.app',

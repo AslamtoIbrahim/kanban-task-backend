@@ -6,7 +6,8 @@ async function bootstrap() {
     bodyParser: false, // Required for Better Auth
   });
   app.enableCors({
-    origin: ['http://localhost:5173'],
+    // origin: ['http://localhost:5173'],
+    origin: ['https://dancing-longma-3d3bef.netlify.app'],
     credentials: true,
   });
   await app.listen(process.env.PORT ?? 3005, () => {
